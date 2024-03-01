@@ -38,31 +38,37 @@ function insertRateMyProfessorIcon() {
   return true;
 }
 
-// Fetches RMP info for the given professor name and displays it in a popup
+// Fetches professor info for the given professor name and displays it in a popup
 function openRmpPopup(professorName) {
-  chrome.runtime.sendMessage(
-    { action: "getProfessorInfo", name: professorName },
-    (response) => {
-      // Check for an error from the message passing
-      if (chrome.runtime.lastError) {
-        console.error(
-          "Error fetching professor info:",
-          chrome.runtime.lastError.message
-        );
-        return;
-      }
-
-      // Assuming no error, proceed to process the response
-      if (response.status === "success") {
-        displayRmpDataPopup(response.data);
-      } else {
-        console.error("Failed to fetch RMP data:", response.message);
-
-        displayErrorPopup("Professor not found/No data available.");
-      }
+  // Use fetch to send a request to your Node.js server
+  fetch('https://mratehosting.com/api/getProfessorInfo', {
+    method: 'POST', // or 'GET' if your server is set up to use query parameters
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ pName: professorName }), // Send the professor's name in the request body
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
     }
-  );
+    return response.json();
+  })
+  .then(data => {
+    // Assuming your server responds with a JSON object that includes a status and the data
+    if (data.status === "success") {
+      displayRmpDataPopup(data.data); // Adjust according to the actual structure of response
+    } else {
+      console.error("Failed to fetch professor info:", data.message);
+      displayErrorPopup("Professor not found/No data available.");
+    }
+  })
+  .catch(error => {
+    console.error("Error fetching professor info:", error.message);
+    displayErrorPopup("Professor not found/No data available.");
+  });
 }
+
 
 // Displays an error message in a popup for when professor data is not found
 function displayErrorPopup(message) {
@@ -205,7 +211,7 @@ function displayRmpDataPopup(data) {
 
   popup.innerHTML = `
     <h2 style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-      <span>${data.name}</span>
+      <span>${data.pname}</span>
       <div style="display: flex; align-items: center;">
         <img src="${iconPath}" alt="Logo" style="width: 50px; height: 50px; margin-right: 20px;">
       <span style="margin-left: auto;">Rate My Professor</span>
@@ -218,23 +224,23 @@ function displayRmpDataPopup(data) {
     </div>
     <div style="margin-bottom: 10px; border-bottom: 1px solid white;">
       <p><strong style="color: #FFCB05;">Number of Ratings:</strong> <span class="data-element" style="color: #EFF0F1;">${
-        data.numberOfRatings
+        data.numberofratings
       }</span></p>
     </div>
     <div style="margin-bottom: 10px; border-bottom: 1px solid white;">
       <p><strong style="color: #FFCB05;">Difficulty Level:</strong> <span class="data-element" style="color: ${getColorForValue(
-        data.difficultyLevel,
+        data.difficultylevel,
         false
-      )};">${data.difficultyLevel}/5</span></p>
+      )};">${data.difficultylevel}/5</span></p>
     </div>
     <div style="margin-bottom: 10px; border-bottom: 1px solid white;">
       <p><strong style="color: #FFCB05;">Would Take Again:</strong> <span class="data-element" style="color: #EFF0F1;">${
-        data.takeAgainPercentage
-      }</span></p>
+        data.takeagainpercentage
+      }%</span></p>
     </div>
     <div style="margin-bottom: 20px;">
       <p><strong style="color: #FFCB05;">Most Recent Review:</strong> <span class="data-element" style="color: #EFF0F1;">${
-        data.mostRecentReview
+        data.mostrecentreview
       }</span></p>
     </div>
   `;
@@ -256,10 +262,15 @@ function displayRmpDataPopup(data) {
 
   document.body.appendChild(popup);
 
-  setTimeout(() => {
-    popup.style.opacity = "1";
-    popup.style.transform = "scale(1)";
-  }, 10);
+  // Use requestAnimationFrame to ensure changes are visually reflected after the popup is in the DOM
+  requestAnimationFrame(() => {
+    // This ensures our style changes are batched and applied together in the next frame
+    requestAnimationFrame(() => {
+      popup.style.opacity = "1";
+      popup.style.transform = "scale(1)";
+    });
+  });
+
 }
 
 // Use a MutationObserver to wait for the elements to be available and insert the icon
