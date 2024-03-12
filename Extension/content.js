@@ -40,9 +40,9 @@ function insertRateMyProfessorIcon() {
 
 // Fetches professor info for the given professor name and displays it in a popup
 function openRmpPopup(professorName) {
-  // Use fetch to send a request to your Node.js server
+  // Use fetch to send request to backend
   fetch('https://mratehosting.com/api/getProfessorInfo', {
-    method: 'POST', // or 'GET' if your server is set up to use query parameters
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
@@ -55,9 +55,8 @@ function openRmpPopup(professorName) {
     return response.json();
   })
   .then(data => {
-    // Assuming your server responds with a JSON object that includes a status and the data
     if (data.status === "success") {
-      displayRmpDataPopup(data.data); // Adjust according to the actual structure of response
+      displayRmpDataPopup(data.data); 
     } else {
       console.error("Failed to fetch professor info:", data.message);
       displayErrorPopup("Professor not found/No data available.");
@@ -98,16 +97,16 @@ function displayErrorPopup(message) {
 
   // Function to update the popup position based on mouse coordinates
   function updatePopupPosition(event) {
-    const xOffset = 20; // Adjust the horizontal offset
-    const yOffset = 20; // Adjust the vertical offset
+    const xOffset = 20; // horizontal offset
+    const yOffset = 20; // vertical offset
     popup.style.left = `${event.clientX + xOffset}px`;
     popup.style.top = `${event.clientY + yOffset}px`;
   }
 
-  // Attach event listener for mousemove to update popup position
+  // event listener for mousemove to update popup position
   document.addEventListener("mousemove", updatePopupPosition);
 
-  // Automatically close the popup after 3 seconds
+  // Automatically close popup after 3 seconds
   setTimeout(() => {
     document.body.removeChild(popup);
     document.removeEventListener("mousemove", updatePopupPosition);
@@ -119,7 +118,7 @@ function displayErrorPopup(message) {
 // Function to interpolate between two red and green based on rating and difficulty level
 function getColorForValue(value, isForRating = true) {
   const max = 5;
-  const factor = value / max; // Normalize value to [0, 1]
+  const factor = value / max;
 
   // Direct linear interpolation for red and green components
   let red, green;
@@ -264,7 +263,6 @@ function displayRmpDataPopup(data) {
 
   // Use requestAnimationFrame to ensure changes are visually reflected after the popup is in the DOM
   requestAnimationFrame(() => {
-    // This ensures our style changes are batched and applied together in the next frame
     requestAnimationFrame(() => {
       popup.style.opacity = "1";
       popup.style.transform = "scale(1)";
