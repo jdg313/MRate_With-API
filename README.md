@@ -2,7 +2,7 @@
 
 This is a rate my professor web extension for integration within the University of Michigan - Dearborn's proprietary scheduling website.
 
-The teachers database is stored locally inside the background script, as the db is small enough (with no sensitive info) to where no hosting is neccessary.
+The teachers database is stored externally in an ubuntu server.
 
 How to use this extension:
 
