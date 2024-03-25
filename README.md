@@ -8,7 +8,7 @@ How to use this extension:
 
 Step 1: Install from the chrome web store or load the extension file unpacked, see step 1a (auto updates not supported with unpacked extensions, and generally not recommended.)
 
-Link to extension: (placeholder)
+Link to extension: https://chromewebstore.google.com/detail/m-rate-for-um-dearborn/aimgbmoghimhngaoebgnpcnoikmienem?hl=en&authuser=3
 
 Step 2: Visit the "registration & schedule" page for UM-Dearborn students
 
